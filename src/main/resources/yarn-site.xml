@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+
+    <!-- Site specific YARN configuration properties -->
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+        <description>shuffle service that needs to be set for Map Reduce to run </description>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+        <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+        <description>新框架中 NodeManager 与 RM 通信的接口class</description>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.webapp.address</name>
+        <value>${yarn.resourcemanager.hostname}:8088</value>
+        <description>新框架中各个 task 的资源调度及运行状况通过通过该 web 界面访问</description>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>nowledgedata-n7</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.resource-tracker.address</name>
+        <value>${yarn.resourcemanager.hostname}:8031</value>
+    </property>
+
+    <property>
+        <description>The address of the applications manager interface in the RM.</description>
+        <name>yarn.resourcemanager.address</name>
+        <value>${yarn.resourcemanager.hostname}:8032</value>
+    </property>
+
+    <property>
+        <description>
+            CLASSPATH for YARN applications. A comma-separated list
+            of CLASSPATH entries. When this value is empty, the following default
+            CLASSPATH for YARN applications would be used.
+            For Linux:
+            $HADOOP_CONF_DIR,
+            $HADOOP_COMMON_HOME/share/hadoop/common/*,
+            $HADOOP_COMMON_HOME/share/hadoop/common/lib/*,
+            $HADOOP_HDFS_HOME/share/hadoop/hdfs/*,
+            $HADOOP_HDFS_HOME/share/hadoop/hdfs/lib/*,
+            $HADOOP_YARN_HOME/share/hadoop/yarn/*,
+            $HADOOP_YARN_HOME/share/hadoop/yarn/lib/*
+            For Windows:
+            %HADOOP_CONF_DIR%,
+            %HADOOP_COMMON_HOME%/share/hadoop/common/*,
+            %HADOOP_COMMON_HOME%/share/hadoop/common/lib/*,
+            %HADOOP_HDFS_HOME%/share/hadoop/hdfs/*,
+            %HADOOP_HDFS_HOME%/share/hadoop/hdfs/lib/*,
+            %HADOOP_YARN_HOME%/share/hadoop/yarn/*,
+            %HADOOP_YARN_HOME%/share/hadoop/yarn/lib/*
+        </description>
+        <name>yarn.application.classpath</name>
+        <value>$HADOOP_COMMON_HOME/share/hadoop/common/*,
+            $HADOOP_COMMON_HOME/share/hadoop/common/lib/*,
+            $HADOOP_HDFS_HOME/share/hadoop/hdfs/*,
+            $HADOOP_HDFS_HOME/share/hadoop/hdfs/lib/*,
+            $HADOOP_YARN_HOME/share/hadoop/yarn/*,
+            $HADOOP_YARN_HOME/share/hadoop/yarn/lib/*,
+        </value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.resource.memory-mb</name>
+        <value>10240</value>
+        <description>
+            Hadoop YARN可以使用的最大内存量，用来控制每个Node上能运行MapReduce的数量。默认8GB
+        </description>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.resource.cpu-vcores</name>
+        <value>32</value>
+        <description>
+            Hadoop 2.x以上提供内存和CPU两种资源技术方式，该参数控制Node上的CPU数量。默认是8
+        </description>
+    </property>
+
+    <property>
+        <name>yarn.scheduler.minimum-allocation-mb</name>
+        <value>256</value>
+    </property>
+
+    <property>
+        <name>yarn.scheduler.maximum-allocation-mb</name>
+        <value>8192</value>
+    </property>
+
+    <property>
+        <name>yarn.scheduler.minimum-allocation-vcores</name>
+        <value>1</value>
+    </property>
+
+    <property>
+        <name>yarn.scheduler.maximum-allocation-vcores</name>
+        <value>32</value>
+    </property>
+
+    <!--
+    <property>
+        <name>yarn.resourcemanager.scheduler.address</name>
+        <value></value>
+        <description>同上，NodeManger 需要知道 RM 主机的 scheduler 调度服务接口地址</description>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.resourcetracker.address</name>
+        <value></value>
+        <description>新框架中 NodeManager 需要向 RM 报告任务运行状态供 Resouce 跟踪，因此 NodeManager 节点主机需要知道 RM 主机的 tracker 接口地址</description>
+    </property>
+    -->
+
+</configuration>
