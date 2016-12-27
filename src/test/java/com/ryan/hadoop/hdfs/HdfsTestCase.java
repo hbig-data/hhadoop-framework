@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 /**
  * @author Rayn
  * @email liuwei412552703@163.com
@@ -63,11 +65,21 @@ public class HdfsTestCase {
     @Test
     public void testAppendWriter() throws Exception {
 
-        FSDataOutputStream outputStream = fileSystem.append(new Path("/usr/test"));
-        outputStream.write("测试追加写入.".getBytes());
+        FSDataOutputStream outputStream = null;
+        try {
+            outputStream = fileSystem.append(new Path("/usr/test"));
+            outputStream.write("测试追加写入.".getBytes());
 
-        outputStream.flush();
-        outputStream.close();
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } finally {
+            if(null != outputStream) {
+                outputStream.close();
+            }
+        }
 
     }
 }
