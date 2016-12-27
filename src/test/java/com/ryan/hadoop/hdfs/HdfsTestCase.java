@@ -55,4 +55,19 @@ public class HdfsTestCase {
         }
 
     }
+
+    /**
+     * 追加写文件
+     * @throws Exception
+     */
+    @Test
+    public void testAppendWriter() throws Exception {
+
+        FSDataOutputStream outputStream = fileSystem.append(new Path("/usr/test"));
+        outputStream.write("测试追加写入.".getBytes());
+
+        outputStream.flush();
+        outputStream.close();
+
+    }
 }
