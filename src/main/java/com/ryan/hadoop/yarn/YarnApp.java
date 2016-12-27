@@ -1,6 +1,5 @@
 package com.ryan.hadoop.yarn;
 
-import org.apache.hadoop.hdfs.web.resources.ExceptionHandler;
 import org.apache.hadoop.yarn.api.protocolrecords.GetNewApplicationResponse;
 import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.client.api.YarnClientApplication;
@@ -16,13 +15,13 @@ import java.io.IOException;
  * @email liuwei412552703@163.com
  * Created by Rayn on 2016/11/22 15:27.
  */
-public class App {
-    private static final Logger LOG = LoggerFactory.getLogger(App.class);
+public class YarnApp {
+    private static final Logger LOG = LoggerFactory.getLogger(YarnApp.class);
 
     private YarnClient yarnClient = null;
     private YarnClientApplication application = null;
 
-    public App() {
+    public YarnApp() {
         YarnConfiguration yarnConf = new YarnConfiguration();
 
         try {
@@ -79,7 +78,7 @@ public class App {
 
 
     public static void main(String[] args) {
-        App app = new App();
+        YarnApp app = new YarnApp();
         app.lanuchApp();
 
 
