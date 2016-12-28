@@ -76,7 +76,7 @@ public class HdfsTestCase {
      * @throws Exception
      */
     @Test
-    public void testAppendWriter() throws Exception {
+    public void testAppendWrite() throws Exception {
 
         FSDataOutputStream outputStream = null;
         try {
@@ -103,9 +103,8 @@ public class HdfsTestCase {
      */
     @Test
     public void testHdfsRemoveFile() throws Exception {
-        Path lockFile = new Path("/ryan/lucene/write.lock");
+        Path lockFile = new Path("/ryan/lucene/");
         fileSystem.delete(lockFile, true);
-
     }
 
     /**
