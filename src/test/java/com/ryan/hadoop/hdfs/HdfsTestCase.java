@@ -1,10 +1,8 @@
 package com.ryan.hadoop.hdfs;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.*;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -12,7 +10,9 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.LongPoint;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.*;
+import org.apache.solr.request.json.JSONUtil;
 import org.apache.solr.store.hdfs.HdfsDirectory;
+import org.codehaus.jettison.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -107,88 +111,73 @@ public class HdfsTestCase {
         fileSystem.delete(lockFile, true);
     }
 
+
     /**
-     * 创建 Lucene 索引到 HDFS
+     *
+     * 查看HDFS中元信息
      *
      * @throws Exception
      */
     @Test
-    public void testLuceneIndex2HDFS() throws Exception {
-        boolean create = true;
+    public void testMetadata() throws Exception {
+        String fileUri = "/usr/test";
 
-        Configuration conf = new Configuration();
-
-        FileSystem fs = FileSystem.get(conf);
-
-        Path indexPath = new Path("/ryan/lucene/");
-        if (!fs.exists(indexPath)) {
-            fs.mkdirs(indexPath);
+        //实验1:查看HDFS中某文件的元信息
+        System.out.println("实验1:查看HDFS中某文件的元信息");
+        FileStatus fileStatus = fileSystem.getFileStatus(new Path(fileUri));
+        //获取这个文件的基本信息
+        if(fileStatus.isDir()==false){
+            System.out.println("这是个文件");
         }
+        System.out.println("文件路径: "+fileStatus.getPath());
+        System.out.println("文件长度: "+fileStatus.getLen());
+        System.out.println("文件修改日期： "+new Timestamp(fileStatus.getModificationTime()).toString());
+        System.out.println("文件上次访问日期： "+new Timestamp(fileStatus.getAccessTime()).toString());
+        System.out.println("文件备份数： "+fileStatus.getReplication());
+        System.out.println("文件的块大小： "+fileStatus.getBlockSize());
+        System.out.println("文件所有者：  "+fileStatus.getOwner());
+        System.out.println("文件所在的分组： "+fileStatus.getGroup());
+        System.out.println("文件的 权限： "+fileStatus.getPermission().toString());
+        System.out.println();
 
-        /**
-         * 创建索引
-         */
-//        Directory fsDirectory = FSDirectory.open(Paths.get(indexPath.toString()));
-        HdfsDirectory hdfsDirectory = new HdfsDirectory(indexPath, conf);
-        Analyzer analyzer = new StandardAnalyzer();
-        IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-
-        if (create) {
-            // Create a new index in the directory, removing any previously indexed documents:
-            iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
-        } else {
-            // Add new documents to an existing index:
-            iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+        //实验2:查看HDFS中某文件的元信息
+        String dirUri = "/usr";
+        System.out.println("实验2:查看HDFS中某目录的元信息");
+        FileStatus dirStatus = fileSystem.getFileStatus(new Path(dirUri));
+        //获取这个目录的基本信息
+        if(dirStatus.isDir()==true){
+            System.out.println("这是个目录");
         }
-
-        // Optional: for better indexing performance, if you are indexing many documents, increase the RAM
-        // buffer.  But if you do this, increase the max heap size to the JVM (eg add -Xmx512m or -Xmx1g):
-        //
-        // iwc.setRAMBufferSizeMB(256.0);
-        IndexWriter writer = new IndexWriter(hdfsDirectory, iwc);
-
-        Document doc = new Document();
-        doc.add(new LongPoint("ids", 11));
-        doc.add(new StringField("content", "测试创建一个索引数据", Field.Store.YES));
-
-        writer.addDocument(doc);
-        writer.commit();
-        //如果是创建和查询在一起执行，不能先关闭，否则会造成查询失败的错误。
-        //writer.close();
-
-        /**
-         * 获取 HDFS 索引数据，查询
-         */
-        IndexReader reader = DirectoryReader.open(hdfsDirectory);
-        System.out.println(reader.numDocs());
-        for (int i = 0; i < reader.numDocs(); i++) {
-            Document document = reader.document(i);
-            LOG.info("查询结果:{} -- {}", document.getValues("ids"), document.get("content"));
+        System.out.println("目录路径: "+dirStatus.getPath());
+        System.out.println("目录长度: "+dirStatus.getLen());
+        System.out.println("目录修改日期： "+new Timestamp (dirStatus.getModificationTime()).toString());
+        System.out.println("目录上次访问日期： "+new Timestamp(dirStatus.getAccessTime()).toString());
+        System.out.println("目录备份数： "+dirStatus.getReplication());
+        System.out.println("目录的块大小： "+dirStatus.getBlockSize());
+        System.out.println("目录所有者：  "+dirStatus.getOwner());
+        System.out.println("目录所在的分组： "+dirStatus.getGroup());
+        System.out.println("目录的 权限： "+dirStatus.getPermission().toString());
+        System.out.println("这个目录下包含以下文件或目录：");
+        for(FileStatus fs : fileSystem.listStatus(new Path(dirUri))){
+            System.out.println(fs.getPath());
         }
-
-        reader.close();
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     @Test
-    public void testLuceneSearch() throws Exception {
-        Configuration conf = new Configuration();
+    public void testHdfsMetaData() throws Exception {
+        String path = "/usr/test";
 
-        Path indexPath = new Path("/ryan/lucene/");
-        /**
-         * 获取 HDFS 索引数据，查询
-         */
-        HdfsDirectory hdfsDirectory = new HdfsDirectory(indexPath, conf);
-        IndexReader reader = DirectoryReader.open(hdfsDirectory);
-        System.out.println(reader.numDocs());
-        for (int i = 0; i < reader.numDocs(); i++) {
-            Document document = reader.document(i);
-            List<IndexableField> fields = document.getFields();
-            for (IndexableField field : fields) {
-                LOG.info("查询结果:{}", field.stringValue());
-            }
+        BlockLocation[] blockLocations = fileSystem.getFileBlockLocations(new Path(path), 14800, 10);
+
+        for (BlockLocation blockLocation : blockLocations) {
+            LOG.info("{}", blockLocation.getOffset(), blockLocation.getLength(), Arrays.asList(blockLocation.getTopologyPaths()).toString());
+
         }
 
-        reader.close();
 
     }
 }
