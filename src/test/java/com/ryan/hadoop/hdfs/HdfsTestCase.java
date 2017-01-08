@@ -2,7 +2,13 @@ package com.ryan.hadoop.hdfs;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
+import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.io.compress.BZip2Codec;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionCodecFactory;
+import org.apache.hadoop.util.ReflectionUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -34,11 +40,13 @@ import java.util.List;
 public class HdfsTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(HdfsTestCase.class);
 
+	private Configuration configuration = null;
+
     private FileSystem fileSystem = null;
 
     @Before
     public void setUp() throws Exception {
-        Configuration configuration = new Configuration();
+        configuration = new Configuration();
         fileSystem = FileSystem.newInstance(configuration);
     }
 
@@ -180,4 +188,78 @@ public class HdfsTestCase {
 
 
     }
+
+	/**
+	*
+	*	写入 SequenceFile
+	*/
+	@Test
+    public void testWriteSequenceFile() throws Exception {
+
+        String [] text = new String[]{"first", "two", "thrid", "four", "five"};
+
+        SequenceFile.Writer writer = null;
+		try{
+			IntWritable key = new IntWritable();
+			Text value = new Text();
+            Path path = new Path("/usr/test");
+            writer = SequenceFile.createWriter(fileSystem, configuration, path, key.getClass(), value.getClass());
+
+
+//            AbstractFileSystem abstractFileSystem = Hdfs.createFileSystem(path.toUri(), configuration);
+//            FileContext context = FileContext.getFileContext(abstractFileSystem, configuration);
+
+            //无压缩
+            writer = SequenceFile.createWriter(fileSystem,configuration,path,key.getClass(),value.getClass());
+            //记录压缩
+            writer = SequenceFile.createWriter(fileSystem,configuration,path,key.getClass(), value.getClass(), SequenceFile.CompressionType.RECORD,new BZip2Codec());
+
+            //块压缩
+            writer = SequenceFile.createWriter(fileSystem,configuration,path,key.getClass(), value.getClass(), SequenceFile.CompressionType.BLOCK,new BZip2Codec());
+
+			for(int i = 0; i < 100; i++){
+				key.set(100 - i);
+				value.set(text[i % text.length]);
+
+				writer.append(key, value);
+			}
+
+		} catch(Exception e){
+            e.printStackTrace();
+		} finally {
+			IOUtils.closeStream(writer);
+		}
+	}
+
+
+	/**
+	 * 读取 SequenceFile
+	 *
+	 */
+	@Test
+    public void testReadSequenceFile() throws Exception {
+
+		Path path = new Path("/usr/test");
+
+		SequenceFile.Reader reader = null;
+
+		try{
+			IntWritable key = new IntWritable();
+			Text value = new Text();
+			reader = new SequenceFile.Reader(fileSystem, path, configuration);
+
+            //Writable key = (Writable) ReflectionUtils.newInstance(reader.getKeyClass(), configuration);
+            //Writable value = (Writable) ReflectionUtils.newInstance(reader.getValueClass(), configuration);
+
+            while (reader.next(key, value)) {
+                System.out.println(key);
+                System.out.println(value);
+            }
+
+        } catch(Exception e){
+            e.printStackTrace();
+		} finally {
+			IOUtils.closeStream(reader);
+		}
+	}
 }
