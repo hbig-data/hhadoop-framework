@@ -250,6 +250,15 @@
         </dependency>
 
 
+
+        <!--============================================ Hadoop Yarn Server Web  Jar =========================================-->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-yarn-server-web-proxy</artifactId>
+            <version>${hadoop.version}</version>
+        </dependency>
+
+
         <!--============================================ lucene Jar =========================================-->
         <dependency>
             <groupId>org.apache.lucene</groupId>
