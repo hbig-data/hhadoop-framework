@@ -1,4 +1,4 @@
-package com.ryan.hadoop.hdfs;
+package com.ryan.hadoop.test.hdfs;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
