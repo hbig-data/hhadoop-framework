@@ -36,7 +36,7 @@ import java.io.IOException;
  */
 public class TimelineClientApi {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Configuration conf = new Configuration();
 
         // Create and start the Timeline client
@@ -81,6 +81,7 @@ public class TimelineClientApi {
         } finally {
             // Stop the Timeline client
             client.stop();
+            client.close();
         }
     }
 }
