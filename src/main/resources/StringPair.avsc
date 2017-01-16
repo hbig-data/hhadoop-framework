@@ -1,0 +1,9 @@
+{
+    "type":"record",
+    "name":StringPair",
+    "doc":"a pair of strings",
+    "fields":[{
+        "name":"left", "type":"string", "order":"ignore" }
+        "name":"right", "type":"string", "order":"descending" }
+    }]
+}
