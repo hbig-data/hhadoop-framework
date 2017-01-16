@@ -1,4 +1,4 @@
-package com.ryan.hadoop.test.yarn;
+package com.ryan.hadoop.yarn;
 
 
 import org.apache.hadoop.conf.Configuration;
