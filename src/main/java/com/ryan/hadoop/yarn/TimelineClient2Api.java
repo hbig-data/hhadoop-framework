@@ -4,6 +4,7 @@ package com.ryan.hadoop.yarn;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.yarn.api.records.timelineservice.TimelineEntity;
 import org.apache.hadoop.yarn.client.api.TimelineClient;
+import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 
 import java.io.IOException;
@@ -15,6 +16,8 @@ import java.io.IOException;
 public class TimelineClient2Api {
     public static void main(String[] args) {
         Configuration conf = new Configuration();
+
+        YarnConfiguration yarnConfiguration = new YarnConfiguration();
 
         // Create and start the Timeline client v.2
         TimelineClient client = TimelineClient.createTimelineClient();
