@@ -84,16 +84,13 @@ public class HBaseTest {
     /**
      * Put (or insert) a row
      */
-    public static void addRecord(String tableName, String rowKey,
-                                 String family, String qualifier, String value) throws Exception {
+    public static void addRecord(String tableName, String rowKey, String family, String qualifier, String value) throws Exception {
         try {
             HTable table = new HTable(conf, tableName);
             Put put = new Put(Bytes.toBytes(rowKey));
-            put.add(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes
-                    .toBytes(value));
+            put.add(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes.toBytes(value));
             table.put(put);
-            System.out.println("insert recored " + rowKey + " to table "
-                    + tableName + " ok.");
+            System.out.println("insert recored " + rowKey + " to table " + tableName + " ok.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -102,8 +99,7 @@ public class HBaseTest {
     /**
      * Delete a row
      */
-    public static void delRecord(String tableName, String rowKey)
-            throws IOException {
+    public static void delRecord(String tableName, String rowKey) throws IOException {
         HTable table = new HTable(conf, tableName);
         List<Delete> list = new ArrayList<Delete>();
         Delete del = new Delete(rowKey.getBytes());
