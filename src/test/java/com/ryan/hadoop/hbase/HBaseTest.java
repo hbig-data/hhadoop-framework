@@ -1,28 +1,17 @@
 package com.ryan.hadoop.hbase;
 
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.MasterNotRunningException;
-import org.apache.hadoop.hbase.ZooKeeperConnectionException;
-import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.*;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Administrator on 2017/1/17.
@@ -34,10 +23,27 @@ public class HBaseTest {
     @Before
     public void setUp() throws Exception {
         conf = HBaseConfiguration.create();
+
+        /**
+         * 新版本API
+         */
+        Connection connection = ConnectionFactory.createConnection(conf);
+        Admin connAdmin = connection.getAdmin();
+
     }
 
     @After
-    public void tearDown() throws Exception{
+    public void tearDown() throws Exception {
+
+    }
+
+    /**
+     * 表存在
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTableExists() throws Exception {
 
     }
 
@@ -46,6 +52,7 @@ public class HBaseTest {
      */
     public static void creatTable(String tableName, String[] familys) throws Exception {
         HBaseAdmin admin = new HBaseAdmin(conf);
+
         if (admin.tableExists(tableName)) {
             System.out.println("table already exists!");
         } else {
@@ -108,28 +115,29 @@ public class HBaseTest {
     /**
      * Get a row
      */
-    public static void getOneRecord (String tableName, String rowKey) throws IOException{
+    public static void getOneRecord(String tableName, String rowKey) throws IOException {
         HTable table = new HTable(conf, tableName);
         Get get = new Get(rowKey.getBytes());
         Result rs = table.get(get);
-        for(KeyValue kv : rs.raw()){
-            System.out.print(new String(kv.getRow()) + " " );
-            System.out.print(new String(kv.getFamily()) + ":" );
-            System.out.print(new String(kv.getQualifier()) + " " );
-            System.out.print(kv.getTimestamp() + " " );
+        for (KeyValue kv : rs.raw()) {
+            System.out.print(new String(kv.getRow()) + " ");
+            System.out.print(new String(kv.getFamily()) + ":");
+            System.out.print(new String(kv.getQualifier()) + " ");
+            System.out.print(kv.getTimestamp() + " ");
             System.out.println(new String(kv.getValue()));
         }
     }
+
     /**
      * Scan (or list) a table
      */
-    public static void getAllRecord (String tableName) {
-        try{
+    public static void getAllRecord(String tableName) {
+        try {
             HTable table = new HTable(conf, tableName);
             Scan s = new Scan();
             ResultScanner ss = table.getScanner(s);
-            for(Result r:ss){
-                for(KeyValue kv : r.raw()){
+            for (Result r : ss) {
+                for (KeyValue kv : r.raw()) {
                     System.out.print(new String(kv.getRow()) + " ");
                     System.out.print(new String(kv.getFamily()) + ":");
                     System.out.print(new String(kv.getQualifier()) + " ");
@@ -137,7 +145,7 @@ public class HBaseTest {
                     System.out.println(new String(kv.getValue()));
                 }
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -145,7 +153,7 @@ public class HBaseTest {
     public static void main(String[] agrs) {
         try {
             String tablename = "scores";
-            String[] familys = { "grade", "course" };
+            String[] familys = {"grade", "course"};
             HBaseTest.creatTable(tablename, familys);
 
             // add record zkb
