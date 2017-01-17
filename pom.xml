@@ -171,6 +171,8 @@
         <lucene.version>6.3.0</lucene.version>
         <solr.version>6.3.0</solr.version>
 
+        <hbase.version>1.2.4</hbase.version>
+
 
         <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -337,13 +339,17 @@
         </dependency>
 
 
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-client</artifactId>
+            <version>${hbase.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
-
-
         </plugins>
     </build>
 
