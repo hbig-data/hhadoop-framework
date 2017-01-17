@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+/**
+ * Copyright 2010 The Apache Software Foundation
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<configuration>
+    <property>
+        <name>hbase.rootdir</name>
+        <value>hdfs://nowledgedata-n7:9000/hbase</value>
+    </property>
+
+    <property>
+        <name>hbase.cluster.distributed</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>hbase.master</name>
+        <value>nowledgedata-n7:60000</value>
+    </property>
+
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>nowledgedata-n7</value>
+    </property>
+
+    <property>
+        <name>hbase.zookeeper.property.clientPort</name>
+        <value>2181</value>
+    </property>
+
+    <property>
+        <name>hbase.coprocessor.region.classes</name>
+        <value>org.apache.hadoop.hbase.coprocessor.AggregateImplementation,com.sdyc.ndschedule.hbase.coprocessor.RowCountCoprocessor</value>
+    </property>
+
+    <!--
+      <property>
+        <name>hbase.coprocessor.master.classes</name>
+        <value>coprocessor.MasterObserverExample</value>
+      </property>
+      <property>
+        <name>hbase.coprocessor.wal.classes</name>
+        <value>coprocessor.WALObserverExample, bar.foo.MyWALObserver</value>
+      </property>
+      -->
+
+
+    <property>
+        <name>zookeeper.session.timeout</name>
+        <value>180000</value>
+        <description>ZooKeeper Session的超时时间，调低该值可以让ZooKeeper更快的发现RegionServer的掉线。 默认为180000.</description>
+    </property>
+
+    <property>
+        <name>hbase.master.maxclockskew</name>
+        <value>180000</value>
+        <description>节点机的时间和master的时间差距大于30000ms，就是30秒时无法启动服务。修改各结点时间，使其误差在30s内</description>
+    </property>
+
+    <property>
+        <name>hbase.master.meta.thread.rescanfrequency</name>
+        <value>10000</value>
+        <description>How long the HMaster sleeps (in milliseconds) between scans of the root and meta tables.</description>
+    </property>
+
+    <property>
+        <name>hbase.server.thread.wakefrequency</name>
+        <value>10000</value>
+        <description>Time to sleep in between searches for work (in milliseconds).Used as sleep interval by service threads such as META scanner and log roller.
+        </description>
+    </property>
+
+    <!--
+        下面的是一些优化的配置
+    -->
+    <property>
+        <name>hbase.regionserver.handler.count</name>
+        <value>10</value>
+        <description>RegionServer控制RPC程序的线程数。如果RegionServer内存较大，可适量调高该值。 默认为10.</description>
+    </property>
+
+    <property>
+        <name>hbase.hregion.majorcompaction</name>
+        <value>86400000</value>
+        <description>一个区域中所有主合并之间的间隔。当设置为0时禁用自动的主合并。主合并会消耗大量IO，重负载的HBase应该禁止自动合并。默认为86400000毫秒， 即一天时间一次.
+        </description>
+    </property>
+
+    <property>
+        <name>hbase.hregion.memstore.flush.size</name>
+        <value>134217728</value>
+        <description>写入数据时，内存到达该值后一次性写入磁盘。 默认为128M.</description>
+    </property>
+
+    <property>
+        <name>hbase.hregion.max.filesize</name>
+        <value>1258291200</value>
+        <description>HRegion上每个分区的大小。如果无线的增大该值，会导致Region停止分割。这个也是关闭自动分割的办法。 默认为1G.</description>
+    </property>
+
+    <property>
+        <name>hbase.hregion.memstore.block.multiplier</name>
+        <value>2</value>
+        <description>某区域的MemStore的大小到达一定阈值时， HBase会对更新阻塞。该值为hbase.hregion.memstore.flush.size × hbase.hregion.memstore.block.multiplier，也就是默认在256M会发生阻塞，在写密集情况下可以提高该值。默认为2.
+        </description>
+    </property>
+
+    <property>
+        <name>ipc.server.tcpnodelay</name>
+        <value>false</value>
+        <description>true时禁止延迟， 即关闭使用缓冲区。 默认为false.</description>
+    </property>
+
+    <property>
+        <name>ipc.client.tcpnodelay</name>
+        <value>false</value>
+        <description>true时禁止延迟， 即关闭使用缓冲区。 默认为false.</description>
+    </property>
+
+    <property>
+        <name>ipc.ping.interval</name>
+        <value>60000</value>
+        <description>ipc ping 频率. 默一分钟。</description>
+    </property>
+
+    <property>
+        <name>hfile.block.cache.size</name>
+        <value>0.25</value>
+        <description>RegionServer堆空间最大值的多少百分比分配给块缓存，默认25%</description>
+    </property>
+
+    <property>
+        <name>hbase.client.scanner.caching</name>
+        <value>100</value>
+        <description>HBase对Scanner扫描缓存的数据行，在调用扫描类的next()方法时能读取到更多的行。默认为1</description>
+    </property>
+
+    <property>
+        <name>hbase.regionserver.global.memstore.upperLimit</name>
+        <value>0.4</value>
+        <description>RegionServer中所有MemStore的总大小，使用超过该百分比后写操作会阻塞，并且强制写磁盘，直到占用率低于hbase.regionserver.global.memstore.lowerLimit。默认为0.4
+        </description>
+    </property>
+
+    <property>
+        <name>hbase.regionserver.global.memstore.lowerLimit</name>
+        <value>0.35</value>
+        <description>强制写磁盘后直到MemStore占用低于该百分比后停止。默认为0.35</description>
+    </property>
+
+    <property>
+        <name>hbase.hstore.blockingStoreFiles</name>
+        <value>7</value>
+        <description>这个storefile就是每次memstore flush造成的，flush一次就多一个storefile，所以一个HStore里面会有多个storefile（其实就是hfile）。当StoreFile超过hbase.hstore.blockingStoreFiles的定义就会发生阻塞并且写磁盘。默认为7
+        </description>
+    </property>
+
+
+
+</configuration>
